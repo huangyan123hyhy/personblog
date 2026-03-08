@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #192938;
+  --color-background-light: #f6f7f7;
+  --color-background-dark: #0a0c10;
+  --color-accent: #3b82f6;
+  
+  --font-display: "Inter", "system-ui", "sans-serif";
+  
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased transition-colors duration-300;
+  }
+}
+
+.markdown-body h1 { @apply text-3xl font-bold mt-8 mb-4; }
+.markdown-body h2 { @apply text-2xl font-bold mt-8 mb-4 border-b border-slate-200 dark:border-slate-800 pb-2; }
+.markdown-body p { @apply leading-relaxed mb-4 text-slate-600 dark:text-slate-400; }
+.markdown-body ul { @apply list-disc list-inside mb-4 space-y-2; }
+.markdown-body pre { @apply bg-slate-100 dark:bg-slate-900 p-4 rounded-xl overflow-x-auto mb-6; }
+.markdown-body code { @apply font-mono text-sm; }

@@ -38,11 +38,12 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import ReactMarkdown from 'react-markdown'
-import MDEditor from '@uiw/react-md-editor'
+import MDEditor, { image as defaultImageCommand } from '@uiw/react-md-editor'
 import { format } from 'date-fns'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { supabase } from './lib/supabase'
+import { uploadImage } from './lib/uploadImage'
 
 // ---------- 工具函数 ----------
 
@@ -1375,6 +1376,36 @@ const AdminArticles = () => {
   )
 }
 
+// ---------- 文章编辑器：自定义图片上传命令 ----------
+
+const customImageCommand = {
+  ...defaultImageCommand,
+  execute: (
+    state: {
+      text: string
+      selectedText: string
+      selection: { start: number; end: number }
+    },
+    api: { replaceSelection: (text: string) => void },
+  ) => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      try {
+        const url = await uploadImage(file)
+        const alt = file.name.replace(/\.[^.]+$/, '').replace(/\]/g, '')
+        api.replaceSelection(`![${alt}](${url})`)
+      } catch (err) {
+        console.error('图片上传失败:', err)
+      }
+    }
+    input.click()
+  },
+}
+
 // ---------- 文章编辑器 ----------
 
 const AdminEditor = () => {
@@ -1531,6 +1562,9 @@ const AdminEditor = () => {
                 placeholder: '# 请输入内容...',
               }}
               style={{ background: 'transparent' }}
+              commandsFilter={(command) =>
+                command.name === 'image' ? customImageCommand : command
+              }
             />
           </div>
         </div>
